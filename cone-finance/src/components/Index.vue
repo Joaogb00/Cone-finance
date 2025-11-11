@@ -130,7 +130,7 @@ section {
   
   width: 0;
   animation: typing 5.2s steps(35, end) 0.8s forwards, blink 0.75s step-end infinite;
-  text-shadow: 0 0 8px #062027;
+  text-shadow: 0 0 8px;
 }
 
 /* ===== ANIMAÇÕES ===== */
