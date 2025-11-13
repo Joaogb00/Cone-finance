@@ -7,22 +7,23 @@
       </div>
 
       <div class="footer-section links">
-        <h3>Links úteis</h3>
+        <h3>Teste</h3>
         <ul>
-          <li><a href="#">Início</a></li>
-          <li><a href="#">Serviços</a></li>
-          <li><a href="#">Contato</a></li>
-          <li><a href="#">Ajuda</a></li>
+          <li><a href="#">Item1</a></li>
+          <li><a href="#">item2</a></li>
+          <li><a href="#">Item3</a></li>
+          <li><a href="#">Item4</a></li>
         </ul>
       </div>
 
       <div class="footer-section social">
         <h3>Conecte-se</h3>
         <div class="social-icons">
-          <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-instagram"></i></a>
-          <a href="#"><i class="bi bi-linkedin"></i></a>
-          <a href="#"><i class="bi bi-twitter-x"></i></a>
+          <a target="_blank" href="https://www.facebook.com/joao.gabriel.715685"><i class="bi bi-facebook"></i></a>
+          <a target="_blank" href="https://www.instagram.com/jaomtz_09/"><i class="bi bi-instagram"></i></a>
+          <a target="_blank" href="https://www.linkedin.com/in/jo%C3%A3o-gabriel-506031260/"><i class="bi bi-linkedin"></i></a>
+          <a target="_blank" href="https://x.com/home"><i class="bi bi-twitter-x"></i></a>  
+          <a target="_blank" href="https://github.com/Joaogb00"><i class="bi bi-github"></i></a>
         </div>
       </div>
     </div>

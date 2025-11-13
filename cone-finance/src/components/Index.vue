@@ -10,7 +10,9 @@
             e descubra novas formas de planejar seus objetivos financeiros com segurança e praticidade.
           </h2>
         </div>
-        <a href="#" class="btn-plataforma">Entrar na Plataforma</a>
+        
+        <router-link class="btn-plataforma" to="/cadastro">Entrar na plataforma</router-link>
+
       </div>
     </section>
   </main>
