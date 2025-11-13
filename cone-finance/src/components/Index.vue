@@ -1,65 +1,64 @@
 <template>
   <main id="fundo">
     <section class="fade-section">
+      <Header />
       <div class="slogan fade-item">
         <h1 class="typing">Controle inteligente das suas finanças.</h1>
+        <div class="sub-slogan">
+          <h2 class="sub">
+            Organize suas entradas e saídas, visualize gráficos em tempo real <br />
+            e descubra novas formas de planejar seus objetivos financeiros com segurança e praticidade.
+          </h2>
+        </div>
+        <a href="#" class="btn-plataforma">Entrar na Plataforma</a>
       </div>
     </section>
   </main>
 
   <!-- BOTÃO DE AJUDA -->
   <div class="help-container fade-item">
-    <button class="help-btn" @click="toggleTooltip">
+    <button ref="button" class="help-btn" @click.stop="toggleTooltip" aria-label="Ajuda">
       <i class="bi bi-question-circle"></i>
     </button>
 
-    <div class="tooltip fade-item" v-if="showTooltip">
-      <h3>Bem-vindo ao Cone Finance</h3>
-      <p>
-        Aqui você pode acompanhar suas <strong>entradas e saídas</strong>,
-        visualizar <strong>gráficos financeiros</strong> e controlar seus gastos
-        com praticidade.
-      </p>
-      <ul>
-        <li>Crie uma conta gratuita para começar a usar.</li>
-        <li>Salve suas transações e monitore seu saldo diário.</li>
-        <li>Tenha acesso a relatórios e metas financeiras personalizadas.</li>
-      </ul>
-      <p class="final-info">
-        <strong>Dica:</strong> cadastre-se para desbloquear todos os recursos!
-        <a href="#">Cadastre-se aqui!</a>
-      </p>
-    </div>
+    <transition name="fade">
+      <div
+        v-if="showTooltip"
+        ref="tooltip"
+        class="tooltip fade-item"
+        @click.stop
+      >
+        <h3>Bem-vindo ao <span class="highlight">Cone Finance</span></h3>
+        <p>
+          Aqui você pode acompanhar suas <strong>entradas e saídas</strong>,
+          visualizar <strong>gráficos financeiros</strong> e controlar seus gastos
+          com praticidade.
+        </p>
+        <ul>
+          <li>Crie uma conta gratuita para começar a usar.</li>
+          <li>Salve suas transações e monitore seu saldo diário.</li>
+          <li>Tenha acesso a relatórios e metas financeiras personalizadas.</li>
+        </ul>
+        <p class="final-info">
+          <strong>Dica:</strong> cadastre-se para desbloquear todos os recursos!<br />
+          <a href="#">Cadastre-se aqui</a>
+        </p>
+      </div>
+    </transition>
   </div>
-
-  <!-- LOGOS DE PARCEIROS -->
-  <div id="parceiros" class="fade-section">
-    <div class="logos fade-item">
-      <a href="https://www.xpi.com.br/" target="_blank">
-        <img src="../assets/img/logo-xp-investimentos.png" alt="XP Investimentos" />
-      </a>
-      <a href="https://www.itau.com.br/" target="_blank">
-        <img src="../assets/img/iti-itau-256.png" alt="Iti Itaú" />
-      </a>
-      <a href="https://edu.b3.com.br/" target="_blank">
-        <img src="../assets/img/logo-b3-brasil-bolsa-balcao-512.png" alt="B3 Brasil Bolsa Balcão" />
-      </a>
-      <a href="https://loterias.caixa.gov.br/Paginas/Federal.aspx" target="_blank">
-        <img src="../assets/img/logo-loteria-federal-256.png" alt="Loteria Federal" />
-      </a>
-      <a href="https://www.nuinvest.com.br/" target="_blank">
-        <img src="../assets/img/logo-nu-invest-256.png" alt="Nu Invest" />
-      </a>
-      <a href="https://www.mastercard.com.br/" target="_blank">
-        <img src="../assets/img/logo-mastercard-256.png" alt="Mastercard" />
-      </a>
-    </div>
-  </div>
+  <Footer/>
 </template>
 
 <script>
+import Footer from "./Footer.vue";
+import Header from "./Header.vue";
+
 export default {
   name: "Index",
+  components: {
+    Header,
+    Footer
+  },
   data() {
     return {
       showTooltip: false,
@@ -68,76 +67,162 @@ export default {
   methods: {
     toggleTooltip() {
       this.showTooltip = !this.showTooltip;
+
+      if (this.showTooltip) {
+        document.addEventListener("click", this.handleClickOutside);
+      } else {
+        document.removeEventListener("click", this.handleClickOutside);
+      }
+    },
+    handleClickOutside(event) {
+      const tooltip = this.$refs.tooltip;
+      const button = this.$refs.button;
+
+      if (
+        tooltip &&
+        !tooltip.contains(event.target) &&
+        !button.contains(event.target)
+      ) {
+        this.showTooltip = false;
+        document.removeEventListener("click", this.handleClickOutside);
+      }
     },
   },
   mounted() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("show");
-          }
+          if (entry.isIntersecting) entry.target.classList.add("show");
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
-    const fadeItems = document.querySelectorAll(".fade-item, .fade-section");
-    fadeItems.forEach((el) => observer.observe(el));
+    document.querySelectorAll(".fade-item, .fade-section").forEach((el) => {
+      observer.observe(el);
+    });
   },
 };
 </script>
 
 <style scoped>
-/* ===== LAYOUT ===== */
+/* ===== LAYOUT GERAL ===== */
 #fundo {
   background-color: #000;
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-x: hidden;
+  overflow: hidden;
+  width: 100%;
 }
 
 section {
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3)),
+  background-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.9),
+      rgba(0, 20, 25, 0.5)
+    ),
     url("../assets/img/Fundo.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   height: 100vh;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.6);
   animation: fadeIn 2s ease-in-out forwards;
-  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== TEXTO PRINCIPAL ===== */
 .slogan {
-  text-align: center;
+  text-align: left;
+  position: absolute;
+  top: 35%;
+  left: 10%;
+  transform: translate(-50%, -50%);
   animation: floatUp 2.5s ease-out;
 }
 
 .typing {
-  font-size: 40px;
+  font-size: 2.4rem;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 1.5px;
+  color: #00aaff;
+  letter-spacing: 1.2px;
   white-space: nowrap;
-  overflow: hidden;
   
   width: 0;
-  animation: typing 5.2s steps(35, end) 0.8s forwards, blink 0.75s step-end infinite;
-  text-shadow: 0 0 8px;
+  animation: typing 4s steps(35, end) 0.8s forwards, blink 0.75s step-end infinite;
+  text-shadow: 2px 2px 2px black;
+}
+
+/* ===== SUB-SLOGAN ===== */
+.sub-slogan {
+  margin-top: 20px;
+}
+
+.sub {
+  font-weight: 300;
+  color: white;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInSub 2s ease forwards;
+  animation-delay: 4.8s;
+  line-height: 1.6rem;
+  max-width: 700px;
+}
+
+/* ===== BOTÃO PRINCIPAL ===== */
+.btn-plataforma {
+  display: inline-block;
+  margin-top: 35px;
+  padding: 14px 32px;
+  background: linear-gradient(145deg, #000 30%, #0a0a0a 100%);
+  color: #00aaff;
+  font-weight: 600;
+  border: 1px solid #00aaff;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 1rem;
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.5s ease;
+  animation: fadeInButton 1.2s ease forwards;
+  animation-delay: 7s; /* só aparece depois do sub-slogan */
+}
+
+.btn-plataforma:hover {
+  background: #00aaff;
+  color: #000;
+  box-shadow: 0 0 25px rgba(0, 170, 255, 0.8);
+  transform: scale(1.05);
 }
 
 /* ===== ANIMAÇÕES ===== */
+@keyframes fadeInSub {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInButton {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== OUTRAS ANIMAÇÕES ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(25px);
   }
   to {
     opacity: 1;
@@ -150,7 +235,7 @@ section {
     width: 0;
   }
   to {
-    width: 38ch;
+    width: 36ch;
   }
 }
 
@@ -162,7 +247,7 @@ section {
 
 @keyframes floatUp {
   0% {
-    transform: translateY(20px);
+    transform: translateY(15px);
     opacity: 0;
   }
   100% {
@@ -171,12 +256,12 @@ section {
   }
 }
 
-/* ===== FADE SCROLL ===== */
+/* ===== SCROLL FADE ===== */
 .fade-item,
 .fade-section {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 1.2s ease, transform 1.2s ease;
+  transition: opacity 1s ease, transform 1s ease;
 }
 
 .fade-item.show,
@@ -194,34 +279,33 @@ section {
 }
 
 .help-btn {
-  background: linear-gradient(135deg, #00ffd9, #0088ff);
-  border: none;
+  background: linear-gradient(145deg, #000 40%, #0a0a0a 100%);
+  border: 2px solid rgba(0, 255, 255, 0.4);
   border-radius: 50%;
   color: white;
   font-size: 1.6rem;
   width: 60px;
   height: 60px;
   cursor: pointer;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
   transition: all 0.4s ease;
-  animation: pulse 2.5s infinite;
+  animation: pulse 3s infinite;
 }
 
 .help-btn:hover {
-  transform: scale(1.15) rotate(5deg);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.9);
+  transform: scale(1.15);
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.8);
 }
 
-/* efeito pulsante */
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.9);
+    box-shadow: 0 0 35px rgba(0, 255, 255, 0.9);
   }
   100% {
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
   }
 }
 
@@ -230,22 +314,27 @@ section {
   position: absolute;
   bottom: 80px;
   right: 0;
-  width: 300px;
-  background-color: #111;
+  width: 320px;
+  background: #0a0a0a;
   color: #fff;
   border-radius: 12px;
-  padding: 18px 20px;
-  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.3);
-  font-family: "Inter", sans-serif;
+  padding: 18px 22px;
+  box-shadow: 0 4px 25px #00aaff;
+  font-family: "Poppins", sans-serif;
+  border: 1px solid #00aaff;
   animation: fadeIn 0.5s ease;
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
 }
 
 .tooltip h3 {
   margin: 0 0 8px 0;
   font-size: 1rem;
-  color: #00ffd9;
+  color: #00e6d2;
   font-weight: 600;
+}
+
+.tooltip .highlight {
+  color: #00e6d2;
 }
 
 .tooltip p,
@@ -268,42 +357,20 @@ section {
 .tooltip a {
   color: #00ffd9;
   text-decoration: none;
-  transition: 0.3s;
+  font-weight: 600;
 }
 
 .tooltip a:hover {
   text-decoration: underline;
 }
 
-/* ===== PARCEIROS ===== */
-#parceiros {
-  height: 60vh;
-  background: linear-gradient(to top, #0a0a0a, #1a1a1a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
 }
 
-.logos {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 50px;
-}
-
-.logos img {
-  height: 120px;
-  width: auto;
-  object-fit: contain;
-  filter: grayscale(100%) brightness(0.8);
-  opacity: 0.8;
-  transition: all 0.4s ease;
-}
-
-.logos img:hover {
-  transform: scale(1.15);
-  filter: grayscale(0%) brightness(1.2);
-  opacity: 1;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
