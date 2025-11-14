@@ -165,7 +165,7 @@ section {
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInSub 2s ease forwards;
-  animation-delay: 4.8s;
+  animation-delay: 3.0s;
   line-height: 1.6rem;
   max-width: 700px;
 }
@@ -187,7 +187,7 @@ section {
   transform: translateY(15px);
   transition: all 0.5s ease;
   animation: fadeInButton 1.2s ease forwards;
-  animation-delay: 7s; /* só aparece depois do sub-slogan */
+  animation-delay: 5.0s; /* só aparece depois do sub-slogan */
 }
 
 .btn-plataforma:hover {

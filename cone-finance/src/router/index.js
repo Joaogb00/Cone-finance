@@ -13,6 +13,11 @@ const router = createRouter({
     path: '/cadastro',
     name:'cadastro',
     component: () => import('../views/Cadastrar.vue')
+   },
+   {
+    path:'/formcad',
+    name:'formcad',
+    component:() => import('../views/FormularioCad.vue')
    }
   ],
 })

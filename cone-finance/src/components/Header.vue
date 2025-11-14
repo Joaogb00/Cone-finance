@@ -1,7 +1,7 @@
 <template>
   <header :class="{ active: isHovered }" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
+    <router-link  to="/"><img src="../assets/img/Log_cone_finance-removebg-preview.png" alt=""></router-link>
     <div class="links">
-      <img src="../assets/img/Log_cone_finance-removebg-preview.png" alt="">
       <a class="link" href="#" @click.prevent="toggleIcon('acao')">
         O que você quer fazer hoje?
         <i :class="icons.acao"></i>
@@ -16,7 +16,8 @@
         Nossa Visão
         <i :class="icons.visao"></i>
       </a>
-      <a href=""><i class="bi bi-person-circle"></i></a>
+      
+       <router-link to="/cadastro"><i class="bi bi-person-circle"></i></router-link>
     </div>
   </header>
 </template>
@@ -96,7 +97,7 @@ header.active {
   transform: rotate(180deg);
 }
 
-
+/* Animação sutil de entrada */
 header {
   animation: fadeIn 1.2s ease-in;
 }
@@ -119,9 +120,9 @@ header {
 }
 .bi-person-circle:hover{
     color: #00aaff;
-    margin-top: 20vh;
 }
 img{
   height: 20vh;
+  margin-right: 40vh;
 }
 </style>
