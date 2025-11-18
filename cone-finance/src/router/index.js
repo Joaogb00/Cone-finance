@@ -14,11 +14,16 @@ const router = createRouter({
     name:'cadastro',
     component: () => import('../views/Cadastrar.vue')
    },
-   {
-    path:'/formcad',
-    name:'formcad',
-    component:() => import('../views/FormularioCad.vue')
-   }
+  {
+    path:'/usuariocadastrado',
+    name:'usuariocadastrado',
+    component: () => import('../views/UsuarioCadastrado/Index.vue')
+  },
+  {
+    path:'/minhaconta',
+    name:'minhaconta',
+    component:() => import ('../views/UsuarioCadastrado/MinhaConta.vue')
+  }
   ],
 })
 

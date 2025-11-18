@@ -361,7 +361,7 @@ section {
   text-decoration: none;
   font-weight: 600;
 }
-
+a
 .tooltip a:hover {
   text-decoration: underline;
 }
