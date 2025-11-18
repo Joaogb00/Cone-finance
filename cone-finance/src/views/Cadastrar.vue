@@ -262,7 +262,7 @@ async loginUser() {
   white-space: nowrap;
 
   width: 0;
-  animation: typing 4s steps(35, end) 0.8s forwards, blink 0.75s step-end infinite;
+  animation: typing 2.0s steps(35, end) 0.8s forwards, blink 0.75s step-end infinite;
   text-shadow: 2px 2px 2px black;
 }
 
@@ -277,7 +277,7 @@ async loginUser() {
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInSub 2s ease forwards;
-  animation-delay: 3.0s;
+  animation-delay: 1.8s;
   line-height: 1.6rem;
   max-width: 700px;
 }
@@ -299,7 +299,7 @@ async loginUser() {
   transform: translateY(15px);
   transition: all 0.5s ease;
   animation: fadeInButton 1.2s ease forwards;
-  animation-delay: 5s;
+  animation-delay: 3s;
   cursor: pointer;
 }
 
@@ -512,7 +512,7 @@ async loginUser() {
   transform: translate(-50%,-50%);
   opacity: 0;
     animation: fadeInButton 1.2s ease forwards;
-  animation-delay: 5.8s;
+  animation-delay: 2.8s;
 }
 
 </style>

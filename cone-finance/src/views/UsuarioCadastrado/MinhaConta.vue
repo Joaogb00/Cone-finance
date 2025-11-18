@@ -103,7 +103,7 @@ export default {
       
       // 🔑 CORREÇÃO AQUI: Codificação da URL
       const encodedEmail = encodeURIComponent(this.userEmail);
-      const apiUrl = `http://localhost:3000/api/usuario/${encodedEmail}`;
+const apiUrl = `http://localhost:3000/api/usuario/${encodedEmail}`;
 
       console.log('DEBUG FRONTEND: Tentando buscar dados de:', apiUrl);
       try {
@@ -151,7 +151,9 @@ export default {
       };
 
       try {
-        const res = await fetch(`http://localhost:3000/api/usuario/${this.userEmail}`, {
+       // ...
+const res = await fetch(`http://localhost:3000/api/usuario/${this.userEmail}`, { 
+// ... {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)

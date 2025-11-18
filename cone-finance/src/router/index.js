@@ -23,6 +23,11 @@ const router = createRouter({
     path:'/minhaconta',
     name:'minhaconta',
     component:() => import ('../views/UsuarioCadastrado/MinhaConta.vue')
+  },
+  {
+    path:'/dashboard',
+    name:'dashboard',
+    component:() => import ('../views/UsuarioCadastrado/Dashboard.vue')
   }
   ],
 })
