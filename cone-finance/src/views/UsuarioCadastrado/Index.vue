@@ -13,13 +13,13 @@
                 </p>
 
                 <div class="action-cards">
-                    <router-link to="/transacao/receita" class="card-item fade-in-delay-1">
+                    <router-link to="/dashboard" class="card-item fade-in-delay-1">
                         <i class="bi bi-arrow-up-circle"></i>
                         <h3>Adicionar Receita</h3>
                         <p>Registre seus ganhos rapidamente.</p>
                     </router-link>
 
-                    <router-link to="/transacao/despesa" class="card-item fade-in-delay-2">
+                    <router-link to="/dashboard" class="card-item fade-in-delay-2">
                         <i class="bi bi-arrow-down-circle"></i>
                         <h3>Registrar Despesa</h3>
                         <p>Monitore cada gasto para manter o controle.</p>
