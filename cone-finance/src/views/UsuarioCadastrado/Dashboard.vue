@@ -60,26 +60,28 @@
       </div>
     </section>
   </main>
-  <Footer />
+  <Footer-cadastrado/>
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import Footer from '../../components/Footer.vue';
+// 🚨 ASSUME-SE QUE VOCÊ TEM UM ARQUIVO api.js CONFIGURADO COM AXIOS INTERCEPTOR.
+// Ex: api.js configura o token JWT no cabeçalho 'Authorization' para todas as requisições.
+import api from '../../services/api'; 
+// Importações de componentes (mantidas)
 import HeaderCadastrado from '../UsuarioCadastrado/Header-cadastrado.vue';
 import BarChart from '../../components/BarChart.vue'; 
-import axios from 'axios';
-
-// 🚨 ATENÇÃO: Substitua esta URL pela URL base do seu servidor backend (ex: http://localhost:3000/api)
-const API_BASE_URL = 'http://localhost:3000/api'; 
+import FooterCadastrado from './Footer-cadastrado.vue';
 
 export default {
     name: 'Dashboard',
     components: {
-        Footer,
+        FooterCadastrado,
         HeaderCadastrado,
         BarChart
     },
+    // Se você estiver usando o Vue Router, é altamente recomendado injetá-lo aqui
+    // setup() deve receber `props, { emit, slots, attrs }`
     setup() {
         // Variáveis reativas (estado)
         const operacaoSelecionada = ref('entrada');
@@ -87,46 +89,38 @@ export default {
         const historicoOperacoes = ref([]);
         const username = ref('Cliente');
 
-        // 💡 NOVO MÉTODO: Trata erros de autenticação (401) de forma centralizada
+        // FUNÇÃO: Trata erros de autenticação (401) e redireciona
         const handleAuthError = () => {
             console.warn("Token inválido ou expirado. Limpando localStorage e solicitando novo login.");
             
-            // 1. Remove o token inválido (limpeza)
+            // 1. Limpa dados de sessão
             localStorage.removeItem('userToken');
             localStorage.removeItem('userName');
             
             alert("Sessão expirada ou usuário não autenticado. Faça login novamente.");
             
-            // 2. O ideal é usar o Vue Router aqui para redirecionar para a tela de login:
-            // if (this.$router) {
-            //     this.$router.push('/login');
-            // }
+            // 2. 🚨 AÇÃO CRÍTICA: Redirecionar para o login
+            // Se você tiver acesso ao router (injetado no setup ou usando options API), use:
+            // router.push('/login'); 
+            
+            // Nota: Como não temos o router injetado aqui, isso é apenas um placeholder.
+            // Se estiver usando o Vue Router, você precisará adicionar: 
+            // `import { useRouter } from 'vue-router';` e `const router = useRouter();`
         };
 
-        // FUNÇÃO AUXILIAR: Obtém o token e trata o erro de autenticação
-        const getAuthHeaders = () => {
-            const token = localStorage.getItem('userToken');
-            if (!token) {
-                // Se o token nem sequer existe, chama o erro de autenticação
-                handleAuthError();
-                return null;
-            }
-            return {
-                headers: {
-                    'Authorization': `Bearer ${token}` 
-                }
-            };
-        };
-
-        // FUNÇÃO: Busca e popula o histórico de transações
+        // FUNÇÃO: Busca e popula o histórico de transações (GET /api/transacoes)
         const buscarHistorico = async () => {
-            const authHeaders = getAuthHeaders();
-            if (!authHeaders) return;
+            // Verificação inicial antes de tentar a API
+            if (!localStorage.getItem('userToken')) {
+                handleAuthError();
+                return;
+            }
 
             try {
-                const response = await axios.get(`${API_BASE_URL}/transacoes`, authHeaders);
+                // 🚀 CHAMADA SIMPLIFICADA: O 'api' já inclui o token no cabeçalho
+                const response = await api.get('/transacoes');
                 
-                // Mapeia, garantindo que dataHora seja um objeto Date, e inverte a ordem
+                // Mapeia, garantindo que dataHora seja um objeto Date, e inverte a ordem (mais recente primeiro)
                 historicoOperacoes.value = response.data.map(op => ({
                     ...op,
                     dataHora: new Date(op.dataHora)
@@ -135,24 +129,25 @@ export default {
             } catch (error) {
                 console.error("Erro ao buscar histórico:", error.response || error);
                 
-                // 💡 AJUSTE: Trata o erro 401 chamando a função centralizada
                 if (error.response && error.response.status === 401) {
-                     handleAuthError();
+                    handleAuthError();
                 } else {
-                     alert("Erro ao carregar o histórico de transações.");
+                    alert("Erro ao carregar o histórico de transações. Verifique a API.");
                 }
             }
         };
 
-        // FUNÇÃO: Registra a nova transação no backend
+        // FUNÇÃO: Registra a nova transação no backend (POST /api/transacoes)
         const registrarOperacao = async () => {
             if (!valorOperacao.value || valorOperacao.value <= 0) {
                 alert('Por favor, insira um valor válido maior que zero.');
                 return;
             }
-
-            const authHeaders = getAuthHeaders();
-            if (!authHeaders) return;
+            
+            if (!localStorage.getItem('userToken')) {
+                handleAuthError();
+                return;
+            }
 
             const dataHoraAtual = new Date();
 
@@ -163,12 +158,10 @@ export default {
             };
             
             try {
-                const response = await axios.post(`${API_BASE_URL}/transacoes`, 
-                    novaOperacaoData, 
-                    authHeaders
-                );
+                // 🚀 CHAMADA SIMPLIFICADA: O 'api' já inclui o token no cabeçalho
+                const response = await api.post('/transacoes', novaOperacaoData); 
                 
-                // Adiciona a nova transação no topo do histórico local
+                // Adiciona a nova transação no topo do histórico local (otimista)
                 historicoOperacoes.value.unshift({
                     ...novaOperacaoData,
                     dataHora: dataHoraAtual,
@@ -181,7 +174,6 @@ export default {
             } catch (error) {
                 console.error("Falha ao salvar a transação:", error.response || error);
                 
-                // 💡 AJUSTE: Trata o erro 401 também no registro
                 if (error.response && error.response.status === 401) {
                     handleAuthError();
                 } else {
@@ -190,7 +182,7 @@ export default {
             }
         };
 
-        // FUNÇÃO: Formatação do valor (Moeda)
+        // FUNÇÕES AUXILIARES DE FORMATAÇÃO
         const formatarValor = (valor) => {
             if (typeof valor !== 'number') return 'R$ 0,00';
             return valor.toLocaleString('pt-BR', {
@@ -199,7 +191,6 @@ export default {
             });
         };
         
-        // FUNÇÃO: Formatação da Data/Hora
         const formatarData = (data) => {
             if (!(data instanceof Date) || isNaN(data)) return 'Data Inválida'; 
 
@@ -236,10 +227,12 @@ export default {
 
         // LIFECYCLE HOOK: Executa ao montar o componente
         onMounted(() => {
+            // Carrega o nome do usuário salvo no localStorage (para a saudação)
             const storedName = localStorage.getItem('userName');
             if (storedName) {
                 username.value = storedName.split(' ')[0];
             }
+            // Carrega o histórico de transações do usuário logado
             buscarHistorico(); 
         });
 

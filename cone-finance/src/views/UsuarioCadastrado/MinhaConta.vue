@@ -59,18 +59,19 @@
         </div>
     </div>
   </main>
-  <Footer/>
+  <Footer-cadastrado/>
 </template>
 
 <script>
-import Footer from '../../components/Footer.vue';
+
 import HeaderCadastrado from '../UsuarioCadastrado/Header-cadastrado.vue';
+import FooterCadastrado from './Footer-cadastrado.vue';
 
 export default {
   name: 'MinhaConta',
   components:{
     HeaderCadastrado,
-    Footer
+    FooterCadastrado
   },
   data() {
     return {

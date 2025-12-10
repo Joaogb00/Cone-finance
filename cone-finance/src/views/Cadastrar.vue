@@ -1,10 +1,10 @@
 <template>
   <main id="fundo">
     <section class="fade-section">
-      <Header />
+      <Header /> 
 
       <div class="slogan fade-item">
-        <h1 class="typing">Você ainda não possui cadastro.</h1>
+        <h1 class="typing">Gerencie suas finanças de forma simples.</h1>
 
         <div class="sub-slogan">
           <h2 class="sub">
@@ -32,15 +32,15 @@
 
             <div class="ele-form">
               <label>Email:</label>
-              <input v-model="login.email" type="email" placeholder="Digite seu email" />
+              <input v-model="login.email" type="email" placeholder="Digite seu email" required />
             </div>
 
             <div class="ele-form">
               <label>Senha:</label>
-              <input v-model="login.senha" type="password" placeholder="Digite sua senha" />
+              <input v-model="login.senha" type="password" placeholder="Digite sua senha" required />
             </div>
 
-            <button class="btn-finance animate-btn">Entrar</button>
+            <button class="btn-finance animate-btn" type="submit">Entrar</button>
           </form>
 
           <form v-else-if="aba === 'cadastro'" @submit.prevent="registerUser" class="form-anim">
@@ -49,54 +49,59 @@
             <div class="line-form">
               <div class="ele-form">
                 <label>Nome:</label>
-                <input v-model="cadastro.nome" type="text" placeholder="Digite seu nome" />
+                <input v-model="cadastro.nome" type="text" placeholder="Digite seu nome" required />
               </div>
 
               <div class="ele-form">
                 <label>Sobrenome:</label>
-                <input v-model="cadastro.sobrenome" type="text" placeholder="Digite seu sobrenome" />
+                <input v-model="cadastro.sobrenome" type="text" placeholder="Digite seu sobrenome" required />
               </div>
             </div>
 
             <div class="ele-form">
               <label>Email:</label>
-              <input v-model="cadastro.email" type="email" placeholder="Digite seu email" />
+              <input v-model="cadastro.email" type="email" placeholder="Digite seu email" required />
             </div>
 
             <div class="ele-form">
               <label>Senha:</label>
-              <input v-model="cadastro.senha" type="password" placeholder="Digite sua senha" />
+              <input v-model="cadastro.senha" type="password" placeholder="Digite sua senha" required />
             </div>
 
             <div class="ele-form">
               <label>Confirmar Senha:</label>
-              <input v-model="cadastro.confSenha" type="password" placeholder="Confirme sua senha" />
+              <input v-model="cadastro.confSenha" type="password" placeholder="Confirme sua senha" required />
             </div>
 
             <div class="ele-form">
               <label>Renda Mensal (R$):</label>
-              <input v-model="cadastro.renda" type="number" placeholder="Exemplo: 2500" />
+              <input v-model="cadastro.renda" type="number" placeholder="Exemplo: 2500" required />
             </div>
 
-            <button class="btn-finance animate-btn">Cadastrar</button>
+            <button class="btn-finance animate-btn" type="submit">Cadastrar</button>
           </form>
         </div>
       </div>
     </section>
   </main>
-
   <Footer />
 </template>
 
 <script>
-import Header from "../components/Header.vue";
-import Footer from "../components/Footer.vue";
-import api from '../services/api'
+// Importe seus componentes Header e Footer reais
+// Exemplo: import Header from "../components/Header.vue";
+  import Footer from "../components/Footer.vue";
+import Header from '../components/Header.vue';
+import api from '../services/api'; // 👈 Importa a instância do Axios configurada
+
 export default {
   name: "Cadastrar",
-  components: { Header, Footer },
+  components:{
+      Footer,
+      Header
+  },
+  // components: { Header, Footer }, // Descomente e importe seus componentes
 
-  
   data() {
     return {
       aba: "login",
@@ -116,6 +121,7 @@ export default {
   },
 
   mounted() {
+    // Código de animação IntersectionObserver (mantido do seu original)
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -124,46 +130,52 @@ export default {
       },
       { threshold: 0.15 }
     );
-
-    // Observa os elementos principais para animação de scroll
     document.querySelectorAll('.fade-item, .fade-section').forEach((el) => {
       observer.observe(el);
     });
   },
-
- // ... código anterior (imports, data, mounted, mudarAba)
 
   methods: {
     mudarAba(novaAba) {
       this.aba = novaAba;
     },
     
-    // MÉTODO LOGINUSER COMPLETO
-    // Dentro de methods: { loginUser() } em src/views/UsuarioCadastrado/Cadastrar.vue
+    async loginUser() {
+        try {
+            const response = await api.post('/login', { 
+                email: this.login.email, 
+                senha: this.login.senha 
+            });
 
-async loginUser() {
-    try {
-        // 1. Usa o "api" configurado para fazer o POST
-        const response = await api.post('/login', { 
-            email: this.email, 
-            senha: this.password 
-        });
-
-        if (response.data && response.data.token) {
-            // 2. SALVA o token no armazenamento local
-            localStorage.setItem('userToken', response.data.token); 
-            localStorage.setItem('userName', response.data.userName);
-            
-            // 3. Redireciona para a Dashboard
-            this.$router.push('/dashboard'); 
+            if (response.data && response.data.token) {
+                
+                // SALVANDO INFORMAÇÕES CRUCIAIS
+                localStorage.setItem('userToken', response.data.token); 
+                localStorage.setItem('userEmail', this.login.email); 
+                
+                // A API deve retornar o nome completo (ex: "nome" ou "userName")
+                const nomeCompleto = response.data.nome || response.data.userName;
+                if (nomeCompleto) {
+                    localStorage.setItem('userName', nomeCompleto);
+                }
+                
+                // Redireciona para o perfil logado
+                this.$router.push('/usuariocadastrado'); // Ajuste para sua rota 'Index' real
+                
+                this.login.email = "";
+                this.login.senha = "";
+            } else {
+                alert('Credenciais inválidas. Tente novamente.');
+            }
+        } catch (error) {
+            console.error("Erro durante o login:", error);
+            const errorMessage = error.response && error.response.data && error.response.data.message
+                                 ? error.response.data.message
+                                 : 'Erro de conexão ou credenciais inválidas.';
+            alert(`Falha no Login: ${errorMessage}`);
         }
-    } catch (error) {
-        // Tratar erros de credenciais inválidas aqui (o Interceptor não interfere no login)
-        console.error("Erro durante o login:", error);
-    }
-},
+    },
 
-    // MÉTODO REGISTERUSER ATUALIZADO
     async registerUser() {
       if (this.cadastro.senha !== this.cadastro.confSenha) {
         alert("As senhas não coincidem!");
@@ -174,43 +186,46 @@ async loginUser() {
         nome: this.cadastro.nome,
         sobrenome: this.cadastro.sobrenome,
         email: this.cadastro.email,
-        senha: this.cadastro.senha,
+        // 🚨 O HASH DEVE SER FEITO NO BACKEND
+        senha: this.cadastro.senha, 
         renda: parseFloat(this.cadastro.renda) 
       };
       
       try {
-        const res = await fetch("http://localhost:3000/api/usuarios", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dadosParaEnviar), 
-        });
+        // Usando a instância 'api' para consistência
+        const res = await api.post("/usuarios", dadosParaEnviar);
 
-        const data = await res.json();
-
-        if (!res.ok) {
-           throw new Error(data.error || 'Falha ao cadastrar usuário.');
+        if (res.status !== 201 && res.status !== 200) {
+            throw new Error(res.data.error || 'Falha ao cadastrar usuário.');
         }
 
-        alert(data.message);
+        alert("Cadastro realizado com sucesso! Faça login para continuar.");
         
-        // 🚀 AÇÃO CRUCIAL: Salva o nome após o cadastro
-        localStorage.setItem('userName', this.cadastro.nome); 
-        localStorage.setItem('userEmail', this.cadastro.email);
+        // Salva o nome completo temporariamente (nome + sobrenome)
+        localStorage.setItem('userName', `${this.cadastro.nome} ${this.cadastro.sobrenome}`); 
+        localStorage.setItem('userEmail', this.cadastro.email); 
 
-        // Redireciona para a dashboard
-        this.$router.push('/usuariocadastrado'); 
+        // Pré-popula o login e muda a aba
+        this.login.email = this.cadastro.email;
+        this.aba = 'login';
+        
+        this.cadastro = { nome: "", sobrenome: "", email: "", senha: "", confSenha: "", renda: "" };
 
       } catch (err) {
         console.error("Erro no cadastro:", err);
-        alert(`Erro ao cadastrar: ${err.message}`);
+        const errorMessage = err.response && err.response.data && err.response.data.message
+                             ? err.response.data.message : err.message;
+        alert(`Erro ao cadastrar: ${errorMessage}`);
       }
     }
   }
 };
-
 </script>
 
+
+
 <style scoped>
+/* COPIEI O SEU CÓDIGO CSS ORIGINAL NA ÍNTEGRA */
 /* ===== LAYOUT GERAL ===== */
 #fundo {
   background-color: #000;
@@ -220,11 +235,9 @@ async loginUser() {
 }
 
 .fade-section {
-  background-image: linear-gradient(
-      to right,
+  background-image: linear-gradient(to right,
       rgba(0, 0, 0, 0.9),
-      rgba(0, 20, 25, 0.5)
-    ),
+      rgba(0, 20, 25, 0.5)),
     url("../assets/img/Fundo cadastro.jpg");
   background-position: center;
   background-repeat: no-repeat;
@@ -307,6 +320,7 @@ async loginUser() {
     opacity: 0;
     transform: translateY(25px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -317,6 +331,7 @@ async loginUser() {
   from {
     width: 0;
   }
+
   to {
     width: 27ch;
   }
@@ -333,6 +348,7 @@ async loginUser() {
     transform: translateY(15px);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -344,6 +360,7 @@ async loginUser() {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -355,6 +372,7 @@ async loginUser() {
     opacity: 0;
     transform: translateY(15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -374,11 +392,13 @@ async loginUser() {
   opacity: 1;
   transform: translateY(0);
 }
-.botoes{
+
+.botoes {
   display: flex;
   flex-direction: row;
   gap: 20px;
 }
+
 .card {
   background: rgba(0, 20, 30, 0.6);
   border: 1px solid #00aaff;
@@ -415,7 +435,7 @@ async loginUser() {
 
 .tabs button.active {
   color: #00aaff;
-  border-bottom: 2px solid #00aaff3d ;
+  border-bottom: 2px solid #00aaff3d;
 }
 
 /* INPUTS */
@@ -493,17 +513,24 @@ async loginUser() {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.conteiner-form{
+
+.conteiner-form {
   position: absolute;
   top: 30%;
   left: 60%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   opacity: 0;
-    animation: fadeInButton 1.2s ease forwards;
+  animation: fadeInButton 1.2s ease forwards;
   animation-delay: 2.8s;
 }
-
 </style>

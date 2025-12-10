@@ -9,10 +9,13 @@
             <div class="footer-section links">
                 <h3>Atalhos</h3>
                 <ul>
-                    <li><a href="#">Início</a></li>
-                    <li><a href="#">Política de Privacidade</a></li>
-                    <li><a href="#">Autor</a></li>
-                    <li><a href="#">Suporte</a></li>
+
+                    <li><router-link to="/usuariocadastrado">Inicio</router-link></li>
+                    <li><router-link to="#">Politica e Privacidade</router-link></li>
+                    <li><router-link to="#">Autor</router-link></li>
+                    
+                    <li><a target="_blank" href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox?compose=GTvVlcSHxwJnCZpDkxPpwTvNfvxqVxgBqvbKsxPWfWJBbLScwQHqgNzkCqlKXQGlTWDXFjtDHVPTl">Suporte</a></li>
+                   
                 </ul>
             </div>
 
@@ -34,22 +37,22 @@
             <h2 class="parceiros-title">Parceiros</h2>
             <div class="logos fade-item">
                 <a href="https://www.xpi.com.br/" target="_blank" rel="noopener noreferrer">
-                    <img src="../assets/img/logo-xp-investimentos.png" alt="XP Investimentos" />
+                    <img src="../../assets/img/logo-xp-investimentos.png" alt="XP Investimentos" />
                 </a>
                 <a href="https://www.itau.com.br/" target="_blank" rel="noopener noreferrer">
-                    <img src="../assets/img/iti-itau-256.png" alt="Iti Itaú" />
+                    <img src="../../assets/img/iti-itau-256.png" alt="Iti Itaú" />
                 </a>
                 <a href="https://edu.b3.com.br/" target="_blank" rel="noopener noreferrer">
-                    <img src="../assets/img/logo-b3-brasil-bolsa-balcao-512.png" alt="B3 Brasil Bolsa Balcão" />
+                    <img src="../../assets/img/logo-b3-brasil-bolsa-balcao-512.png" alt="B3 Brasil Bolsa Balcão" />
                 </a>
                 <a href="https://loterias.caixa.gov.br/Paginas/Federal.aspx" target="_blank" rel="noopener noreferrer">
-                    <img src="../assets/img/logo-loteria-federal-256.png" alt="Loteria Federal" />
+                    <img src="../../assets/img/logo-loteria-federal-256.png" alt="Loteria Federal" />
                 </a>
                 <a href="https://www.nuinvest.com.br/" target="_blank" rel="noopener noreferrer">
-                    <img src="../assets/img/logo-nu-invest-256.png" alt="Nu Invest" />
+                    <img src="../../assets/img/logo-nu-invest-256.png" alt="Nu Invest" />
                 </a>
                 <a href="https://www.mastercard.com.br/" target="_blank" rel="noopener noreferrer">
-                    <img src="../assets/img/logo-mastercard-256.png" alt="Mastercard" />
+                    <img src="../../assets/img/logo-mastercard-256.png" alt="Mastercard" />
                 </a>
             </div>
         </section>
