@@ -12,14 +12,14 @@
             ou faça <strong>Login</strong> para entrar na plataforma.
           </h2>
         </div>
-        
+
         <div class="botoes">
           <a class="btn-plataforma" @click="mudarAba('login')">Realizar Login</a>
           <a class="btn-plataforma" @click="mudarAba('cadastro')">Realizar Cadastro</a>
         </div>
       </div>
       <div class="conteiner-form">
-        
+
         <div class="card animate-card">
 
           <div class="tabs">
@@ -32,12 +32,12 @@
 
             <div class="ele-form">
               <label>Email:</label>
-              <input v-model="login.email" type="email" placeholder="Digite seu email" />
+              <input v-model="login.email" type="email" placeholder="Digite seu email" required />
             </div>
 
             <div class="ele-form">
               <label>Senha:</label>
-              <input v-model="login.senha" type="password" placeholder="Digite sua senha" />
+              <input v-model="login.senha" type="password" placeholder="Digite sua senha" required />
             </div>
 
             <button class="btn-finance animate-btn">Entrar</button>
@@ -49,33 +49,33 @@
             <div class="line-form">
               <div class="ele-form">
                 <label>Nome:</label>
-                <input v-model="cadastro.nome" type="text" placeholder="Digite seu nome" />
+                <input v-model="cadastro.nome" type="text" placeholder="Digite seu nome" required />
               </div>
 
               <div class="ele-form">
                 <label>Sobrenome:</label>
-                <input v-model="cadastro.sobrenome" type="text" placeholder="Digite seu sobrenome" />
+                <input v-model="cadastro.sobrenome" type="text" placeholder="Digite seu sobrenome" required />
               </div>
             </div>
 
             <div class="ele-form">
               <label>Email:</label>
-              <input v-model="cadastro.email" type="email" placeholder="Digite seu email" />
+              <input v-model="cadastro.email" type="email" placeholder="Digite seu email" required />
             </div>
 
             <div class="ele-form">
               <label>Senha:</label>
-              <input v-model="cadastro.senha" type="password" placeholder="Digite sua senha" />
+              <input v-model="cadastro.senha" type="password" placeholder="Digite sua senha" required />
             </div>
 
             <div class="ele-form">
               <label>Confirmar Senha:</label>
-              <input v-model="cadastro.confSenha" type="password" placeholder="Confirme sua senha" />
+              <input v-model="cadastro.confSenha" type="password" placeholder="Confirme sua senha" required />
             </div>
 
             <div class="ele-form">
               <label>Renda Mensal (R$):</label>
-              <input v-model="cadastro.renda" type="number" placeholder="Exemplo: 2500" />
+              <input v-model="cadastro.renda" type="number" placeholder="Exemplo: 2500" min="0" required />
             </div>
 
             <button class="btn-finance animate-btn">Cadastrar</button>
@@ -91,12 +91,15 @@
 <script>
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
-import api from '../services/api'
+import axios from 'axios'; 
+
+// 🛑 PONTO CRÍTICO: Se a porta 3000 estiver bloqueada (comum), altere aqui para 3001
+const API_BASE_URL = 'http://localhost:3000/api'; 
+
 export default {
   name: "Cadastrar",
   components: { Header, Footer },
 
-  
   data() {
     return {
       aba: "login",
@@ -125,93 +128,110 @@ export default {
       { threshold: 0.15 }
     );
 
-    // Observa os elementos principais para animação de scroll
     document.querySelectorAll('.fade-item, .fade-section').forEach((el) => {
       observer.observe(el);
     });
   },
 
- // ... código anterior (imports, data, mounted, mudarAba)
-
   methods: {
     mudarAba(novaAba) {
       this.aba = novaAba;
     },
-    
-    // MÉTODO LOGINUSER COMPLETO
-    // Dentro de methods: { loginUser() } em src/views/UsuarioCadastrado/Cadastrar.vue
 
-async loginUser() {
-    try {
-        // 1. Usa o "api" configurado para fazer o POST
-        const response = await api.post('/login', { 
-            email: this.email, 
-            senha: this.password 
+    /**
+     * 🚀 MÉTODO DE LOGIN COM TRATAMENTO DE ERRO MELHORADO E TIMEOUT
+     */
+    async loginUser() {
+      try {
+        const response = await axios.post(`${API_BASE_URL}/login`, {
+          email: this.login.email ? this.login.email.trim() : '',
+          senha: this.login.senha ? this.login.senha.trim() : ''
+        }, {
+          // Adiciona um timeout de 5 segundos para evitar requisições penduradas
+          timeout: 5000 
         });
 
         if (response.data && response.data.token) {
-            // 2. SALVA o token no armazenamento local
-            localStorage.setItem('userToken', response.data.token); 
-            localStorage.setItem('userName', response.data.userName);
-            
-            // 3. Redireciona para a Dashboard
-            this.$router.push('/dashboard'); 
+          const token = response.data.token;
+          localStorage.setItem('userToken', token);
+          localStorage.setItem('userName', response.data.userName);
+          
+          if (response.data.userId) {
+              localStorage.setItem('userId', response.data.userId); 
+          }
+          
+          // Redirecionamento para a dashboard
+          this.$router.push({ 
+              name: 'user_home', // Confirme se o nome da rota é 'dashboard'
+              params: { id: token } 
+          });
         }
-    } catch (error) {
-        // Tratar erros de credenciais inválidas aqui (o Interceptor não interfere no login)
+      } catch (error) {
         console.error("Erro durante o login:", error);
-    }
-},
+        
+        if (error.response) {
+            // O servidor respondeu, mas com status de erro (4xx ou 5xx)
+            const status = error.response.status;
+            if (status === 404) {
+                alert('E-mail não encontrado.');
+            } else if (status === 401) {
+                alert('Senha incorreta.');
+            } else {
+                alert(`Falha ao realizar login (Código: ${status}). Tente novamente mais tarde.`);
+            }
+        } else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+            // Erro de Timeout
+            alert('A requisição demorou muito para responder (Timeout). Verifique sua conexão e o backend.');
+        } else {
+            // 🛑 ERRO DE REDE/CORS/CONEXÃO RECUSADA
+            alert('Não foi possível conectar ao servidor. Verifique se o backend está rodando em http://localhost:3000.');
+        }
+      }
+    },
 
-    // MÉTODO REGISTERUSER ATUALIZADO
+    /**
+     * MÉTODO REGISTERUSER (Mantido)
+     */
     async registerUser() {
       if (this.cadastro.senha !== this.cadastro.confSenha) {
         alert("As senhas não coincidem!");
         return;
       }
-
+      
       const dadosParaEnviar = {
-        nome: this.cadastro.nome,
-        sobrenome: this.cadastro.sobrenome,
-        email: this.cadastro.email,
+        nome: this.cadastro.nome.trim(),
+        sobrenome: this.cadastro.sobrenome.trim(),
+        email: this.cadastro.email.trim(), 
         senha: this.cadastro.senha,
-        renda: parseFloat(this.cadastro.renda) 
+        renda: parseFloat(this.cadastro.renda)
       };
       
       try {
-        const res = await fetch("http://localhost:3000/api/usuarios", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dadosParaEnviar), 
-        });
+        const res = await axios.post(`${API_BASE_URL}/usuarios`, dadosParaEnviar);
 
-        const data = await res.json();
-
-        if (!res.ok) {
-           throw new Error(data.error || 'Falha ao cadastrar usuário.');
-        }
-
-        alert(data.message);
+        alert(res.data.message || "Usuário cadastrado com sucesso! Faça login.");
         
-        // 🚀 AÇÃO CRUCIAL: Salva o nome após o cadastro
-        localStorage.setItem('userName', this.cadastro.nome); 
-        localStorage.setItem('userEmail', this.cadastro.email);
+        this.login.email = this.cadastro.email.trim();
+        this.login.senha = "";
+        this.aba = 'login'; 
+        this.cadastro = { nome: "", sobrenome: "", email: "", senha: "", confSenha: "", renda: "" };
 
-        // Redireciona para a dashboard
-        this.$router.push('/usuariocadastrado'); 
-
-      } catch (err) {
-        console.error("Erro no cadastro:", err);
-        alert(`Erro ao cadastrar: ${err.message}`);
+      } catch (error) {
+        console.error("Erro no cadastro:", error.response || error);
+        
+        if (error.response && error.response.data.error) {
+              alert(`Erro ao cadastrar: ${error.response.data.error}`);
+        } else {
+              alert('Erro ao cadastrar. Verifique sua conexão e tente novamente.');
+        }
       }
     }
   }
 };
-
 </script>
 
 <style scoped>
-/* ===== LAYOUT GERAL ===== */
+/* ESTILOS (MANTIDOS IGUAIS) */
 #fundo {
   background-color: #000;
   height: 120vh;
@@ -235,7 +255,6 @@ async loginUser() {
   animation: fadeIn 2s ease-in-out forwards;
 }
 
-/* ===== TEXTO PRINCIPAL ===== */
 .slogan {
   text-align: left;
   position: absolute;
@@ -257,7 +276,6 @@ async loginUser() {
   text-shadow: 2px 2px 2px black;
 }
 
-/* ===== SUB-SLOGAN ===== */
 .sub-slogan {
   margin-top: 20px;
 }
@@ -273,7 +291,6 @@ async loginUser() {
   max-width: 700px;
 }
 
-/* ===== BOTÃO PRINCIPAL ===== */
 .btn-plataforma {
   display: inline-block;
   margin-top: 35px;
@@ -301,7 +318,6 @@ async loginUser() {
   transform: scale(1.05);
 }
 
-/* ===== ANIMAÇÕES ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -361,7 +377,6 @@ async loginUser() {
   }
 }
 
-/* ===== SCROLL FADE ===== */
 .fade-item,
 .fade-section {
   opacity: 0;
@@ -374,7 +389,7 @@ async loginUser() {
   opacity: 1;
   transform: translateY(0);
 }
-.botoes{
+.botoes {
   display: flex;
   flex-direction: row;
   gap: 20px;
@@ -390,7 +405,6 @@ async loginUser() {
   box-shadow: 0 0 18px #00aaff3d;
 }
 
-/* ABA */
 .tabs {
   display: flex;
   justify-content: space-between;
@@ -415,10 +429,9 @@ async loginUser() {
 
 .tabs button.active {
   color: #00aaff;
-  border-bottom: 2px solid #00aaff3d ;
+  border-bottom: 2px solid #00aaff3d;
 }
 
-/* INPUTS */
 .ele-form {
   display: flex;
   flex-direction: column;
@@ -451,7 +464,6 @@ async loginUser() {
   transform: scale(1.03);
 }
 
-/* BOTÃO */
 .btn-finance {
   width: 100%;
   margin-top: 10px;
@@ -473,37 +485,18 @@ async loginUser() {
   transform: scale(1.05);
 }
 
-/* COLUNAS */
 .line-form {
   display: flex;
   gap: 10px;
 }
 
-/* ANIMAÇÕES */
-.fade-item,
-.fade-section {
-  opacity: 0;
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.fade-item.show,
-.fade-section.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.conteiner-form{
+.conteiner-form {
   position: absolute;
   top: 30%;
   left: 60%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   opacity: 0;
-    animation: fadeInButton 1.2s ease forwards;
+  animation: fadeInButton 1.2s ease forwards;
   animation-delay: 2.8s;
 }
-
 </style>

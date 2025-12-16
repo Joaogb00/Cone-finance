@@ -1,22 +1,31 @@
 <template>
   <header :class="{ active: isHovered }" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
-    <router-link  to="/usuariocadastrado"><img src="../../assets/img/Log_cone_finance-removebg-preview.png" alt=""></router-link>
+    <router-link :to="{ name: 'usuariocadastrado' }">
+    <img src="../../assets/img/Log_cone_finance-removebg-preview.png" alt="">
+</router-link>
+    
     <div class="links">
-      <a class="link" href="#" @click.prevent="toggleIcon('acao')">
-        O que você quer fazer hoje?
-        <i :class="icons.acao"></i>
-      </a>
+  <a class="link" href="#" @click.prevent="toggleIcon('acao')">
+    O que você quer fazer hoje?
+    <i :class="icons.acao"></i>
+  </a>
 
-      <a class="link" href="#" @click.prevent="toggleIcon('contato')">
-        Contato
-        <i :class="icons.contato"></i>
-      </a>
+  <a class="link" href="#" @click.prevent="toggleIcon('contato')">
+    Contato
+    <i :class="icons.contato"></i>
+  </a>
 
-      
-         <router-link to="/dashboard" class="link" @click.prevent="toggleIcon('dashboard')">Minha dashboard</router-link>
+  <router-link 
+    :to="{ name: 'dashboard', params: { id: userToken } }" 
+    class="link" 
+  >
+    Minha dashboard
+  </router-link>
 
-       <router-link to="/minhaconta"><i class="bi bi-person-circle"></i></router-link>
-    </div>
+  <router-link :to="{ name: 'minhaconta', params: { id: userToken } }">
+    <i class="bi bi-person-circle"></i>
+  </router-link>
+</div>
   </header>
 </template>
 
@@ -31,21 +40,33 @@ export default {
         contato: "bi bi-chevron-compact-down",
         visao: "bi bi-chevron-compact-down",
       },
+      // 💡 1. Adiciona a propriedade userToken lendo-a do localStorage
+      // 'guest' é um fallback caso o token não exista (embora o guarda de rota deva pegar isso)
+      userToken: localStorage.getItem('userToken') || 'guest', 
     };
   },
+  mounted() {
+    // 💡 2. Garante que o token seja lido quando o componente for montado
+    this.userToken = localStorage.getItem('userToken') || 'guest';
+    
+  },
   methods: {
-    toggleIcon(key) {
-      // Alterna o ícone entre "down" e "up"
-      this.icons[key] =
-        this.icons[key] === "bi bi-chevron-compact-down"
-          ? "bi bi-chevron-compact-up"
-          : "bi bi-chevron-compact-down";
-    },
+   toggleIcon(key) {
+    // 💡 Verifica se a chave existe antes de tentar acessá-la
+    if (this.icons[key]) {
+        // Alterna o ícone entre "down" e "up"
+        this.icons[key] =
+            this.icons[key] === "bi bi-chevron-compact-down"
+            ? "bi bi-chevron-compact-up"
+            : "bi bi-chevron-compact-down";
+    }
+},
   },
 };
 </script>
 
 <style scoped>
+/* Estilos mantidos inalterados */
 header {
   background-color: transparent;
   height: 17vh;
@@ -112,12 +133,12 @@ header {
 }
 
 .bi-person-circle{
-    font-size: 30px;
-    color: white;
-    transition: color 0.3s ease;
+  font-size: 30px;
+  color: white;
+  transition: color 0.3s ease;
 }
 .bi-person-circle:hover{
-    color: #00aaff;
+  color: #00aaff;
 }
 img{
   height: 20vh;

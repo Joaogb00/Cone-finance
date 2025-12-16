@@ -66,6 +66,9 @@
 import Footer from '../../components/Footer.vue';
 import HeaderCadastrado from '../UsuarioCadastrado/Header-cadastrado.vue';
 
+// Definição da URL base
+const API_BASE_URL = 'http://localhost:3000/api'; 
+
 export default {
   name: 'MinhaConta',
   components:{
@@ -82,10 +85,10 @@ export default {
         _id: null, 
       },
       newPassword: '',
-      initialPassword: '', 
       showConfirmModal: false,
       showLogoutModal: false, 
-      userEmail: localStorage.getItem('userEmail') || '', 
+      // Não precisamos mais do userEmail, mas mantemos o token
+      token: localStorage.getItem('userToken') || '',
       originalUser: {}, 
     };
   },
@@ -93,69 +96,73 @@ export default {
     this.fetchUserData();
   },
   methods: {
-    // 1. Busca os dados do usuário no backend (CORREÇÃO DE ENCODING APLICADA AQUI)
+    // 🔑 OTIMIZAÇÃO DE SEGURANÇA: Busca os dados pelo token
     async fetchUserData() {
-      if (!this.userEmail) {
-        alert("Erro: Email do usuário não encontrado no sistema. Faça o login novamente.");
+      if (!this.token) {
+        alert("Sessão não encontrada. Faça o login novamente.");
         this.$router.push('/cadastrar');
         return;
       }
       
-      // 🔑 CORREÇÃO AQUI: Codificação da URL
-      const encodedEmail = encodeURIComponent(this.userEmail);
-const apiUrl = `http://localhost:3000/api/usuario/${encodedEmail}`;
-
-      console.log('DEBUG FRONTEND: Tentando buscar dados de:', apiUrl);
+      const apiUrl = `${API_BASE_URL}/me`; // Nova rota protegida
+      
       try {
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl, {
+            headers: {
+                'Authorization': `Bearer ${this.token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
         const data = await res.json();
         
         if (!res.ok) {
           throw new Error(data.error || 'Falha ao carregar dados do usuário.');
         }
 
+        // Preenche o objeto user com os dados retornados (que não incluem a senha)
         this.user = {
           nome: data.nome,
           sobrenome: data.sobrenome,
           email: data.email,
-          renda: data.renda,
+          renda: data.renda || 0, // Garante que renda é um número
           _id: data._id, 
         };
+        // Salva os dados originais para comparação (opcional, mas bom)
         this.originalUser = { ...this.user };
         
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
-        alert(`Não foi possível carregar suas informações: ${error.message}`);
+        alert(`Não foi possível carregar suas informações: ${error.message}. Tente logar novamente.`);
+        // Se o erro for 401 (token inválido), o ideal é forçar o logout
       }
     },
     
-    // 2. Inicia o processo de atualização (checa a senha)
-    updateUser() {
-      if (this.newPassword.length > 0) {
-        this.confirmUpdate();
-      } else {
-        this.confirmUpdate();
+    // 2. Executa a chamada PUT para o backend (também via token)
+    async updateUser() {
+      if (!this.token || !this.user._id) {
+          alert("Erro de autenticação. Faça o login novamente.");
+          this.$router.push('/cadastrar');
+          return;
       }
-    },
-    
-    // 3. Executa a chamada PUT para o backend
-    async confirmUpdate() {
-      this.showConfirmModal = false; 
-      
+
       const payload = {
-        nome: this.user.nome,
-        sobrenome: this.user.sobrenome,
-        email: this.user.email,
-        renda: this.user.renda,
+        nome: this.user.nome.trim(),
+        sobrenome: this.user.sobrenome.trim(),
+        email: this.user.email.trim(),
+        renda: parseFloat(this.user.renda),
+        // Envia a nova senha apenas se o campo estiver preenchido
         newPassword: this.newPassword.length > 0 ? this.newPassword : undefined,
       };
 
       try {
-       // ...
-const res = await fetch(`http://localhost:3000/api/usuario/${this.userEmail}`, { 
-// ... {
+        // Nova rota PUT: /api/usuario (sem o email na URL)
+        const res = await fetch(`${API_BASE_URL}/usuario`, { 
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+          },
           body: JSON.stringify(payload)
         });
 
@@ -166,8 +173,9 @@ const res = await fetch(`http://localhost:3000/api/usuario/${this.userEmail}`, {
         }
 
         alert("Seus dados foram atualizados com sucesso!");
-        this.newPassword = ''; 
-        localStorage.setItem('userEmail', this.user.email);
+        this.newPassword = ''; // Limpa o campo de senha
+        // Atualiza o nome de exibição no localStorage, se necessário
+        localStorage.setItem('userName', data.usuario.nome);
         
       } catch (error) {
         console.error("Erro ao atualizar dados:", error);
@@ -175,12 +183,13 @@ const res = await fetch(`http://localhost:3000/api/usuario/${this.userEmail}`, {
       }
     },
 
-    // 4. Ação de Logout (Chamado pelo modal de confirmação)
+    // 4. Ação de Logout
     async confirmLogout() {
         this.showLogoutModal = false; 
         
-        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userToken'); // Remova o token!
         localStorage.removeItem('userName');
+        // Você pode ter que limpar outros itens do localStorage
         
         alert("Você saiu da sua conta. Até mais!");
         
