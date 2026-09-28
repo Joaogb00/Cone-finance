@@ -1,38 +1,183 @@
-# cone-finance
+CONE FINANCE
 
-This template should help get you started developing with Vue 3 in Vite.
+Bem-vindo ao Cone Finance, uma plataforma desenvolvida para tornar a organização financeira mais simples, visual e intuitiva.
 
-## Recommended IDE Setup
+O principal objetivo do projeto é ajudar o usuário a acompanhar, organizar e entender melhor suas finanças, reunindo informações sobre gastos, receitas, investimentos e movimentações financeiras em um único ambiente.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+A proposta do Cone Finance é reduzir a complexidade normalmente associada ao controle financeiro. Em vez de apresentar apenas números e registros, a plataforma busca transformar os dados do usuário em informações claras e de fácil interpretação, proporcionando uma visão mais completa da sua situação financeira.
 
-## Recommended Browser Setup
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+SOBRE O PROJETO
 
-## Customize configuration
+Muitas pessoas possuem dificuldade para entender para onde o dinheiro está indo, quanto estão gastando e de que forma suas decisões financeiras afetam seu orçamento.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+O Cone Finance foi desenvolvido pensando justamente nesse problema.
 
-## Project Setup
+A plataforma permite que o usuário registre e acompanhe suas movimentações financeiras, utilizando estatísticas e representações visuais para facilitar a análise de gastos, receitas e investimentos.
 
-```sh
+Mais do que simplesmente registrar valores que entram e saem, o projeto busca proporcionar ao usuário uma visão mais organizada e consciente sobre suas próprias finanças.
+
+
+OBJETIVO
+
+O principal objetivo do Cone Finance é simplificar o controle financeiro pessoal e facilitar a compreensão das movimentações realizadas pelo usuário.
+
+A plataforma busca permitir que o usuário:
+
+Acompanhe suas movimentações financeiras;
+
+Organize receitas e despesas;
+
+Visualize seus gastos de maneira clara;
+
+Acompanhe informações relacionadas aos seus investimentos;
+
+Utilize estatísticas para compreender seus hábitos financeiros;
+
+Tenha uma visão geral da sua situação financeira;
+
+Tome decisões com base nas informações registradas na plataforma.
+
+
+DIFERENCIAL
+
+O diferencial do Cone Finance está na maneira como as informações financeiras são apresentadas ao usuário.
+
+Em vez de trabalhar apenas com listas extensas de transações e valores, a plataforma utiliza estatísticas e representações visuais para transformar dados financeiros em informações mais fáceis de compreender.
+
+A intenção é fazer com que o usuário deixe de enxergar o controle financeiro como algo complexo e passe a ter uma relação mais organizada, clara e consciente com seu dinheiro.
+
+
+PRINCIPAIS FUNCIONALIDADES
+
+Registro de receitas;
+
+Registro de despesas;
+
+Histórico de movimentações financeiras;
+
+Visualização de estatísticas;
+
+Acompanhamento de investimentos;
+
+Organização das movimentações por categorias;
+
+Visualização do saldo;
+
+Análise de gastos;
+
+Dashboard financeiro;
+
+Interface simples e intuitiva.
+
+
+DASHBOARD
+
+O dashboard funciona como o principal centro de informações do Cone Finance.
+
+Por meio dele, o usuário consegue visualizar rapidamente os principais dados relacionados à sua vida financeira, como saldo disponível, receitas, despesas, investimentos e estatísticas.
+
+O objetivo é permitir que informações importantes sejam compreendidas de maneira rápida e visual, sem que seja necessário analisar manualmente cada movimentação realizada.
+
+
+TECNOLOGIAS
+
+O Cone Finance foi desenvolvido utilizando tecnologias voltadas para o desenvolvimento web.
+
+Front-end:
+
+Vue.js
+HTML
+CSS
+JavaScript
+
+Outras tecnologias e ferramentas poderão ser adicionadas conforme o desenvolvimento e a evolução do projeto.
+
+
+EXECUTANDO O PROJETO
+
+Para executar o projeto localmente, primeiro clone o repositório:
+
+git clone URL_DO_REPOSITORIO
+
+Entre no diretório do projeto:
+
+cd cone-finance
+
+Instale as dependências:
+
 npm install
-```
 
-### Compile and Hot-Reload for Development
+Execute o ambiente de desenvolvimento:
 
-```sh
 npm run dev
-```
 
-### Compile and Minify for Production
+Após iniciar o servidor, acesse no navegador o endereço informado pelo terminal.
 
-```sh
-npm run build
-```
+
+ESTRUTURA DO PROJETO
+
+cone-finance/
+
+public/
+
+src/
+    assets/
+    components/
+    views/
+    router/
+    App.vue
+
+package.json
+
+README.md
+
+
+POSSÍVEIS MELHORIAS
+
+O Cone Finance é um projeto que pode continuar evoluindo por meio da implementação de novas funcionalidades e melhorias.
+
+Entre algumas possibilidades estão:
+
+Sistema completo de autenticação;
+
+Criação de metas financeiras;
+
+Planejamento financeiro mensal;
+
+Relatórios financeiros;
+
+Comparação de gastos entre diferentes períodos;
+
+Gráficos e estatísticas mais detalhadas;
+
+Sistema de notificações;
+
+Expansão do acompanhamento de investimentos;
+
+Exportação de relatórios;
+
+Melhorias de responsividade e experiência do usuário.
+
+
+VISÃO DO PROJETO
+
+O Cone Finance parte do princípio de que entender e organizar o próprio dinheiro não deveria ser uma tarefa complicada.
+
+Por isso, o projeto busca unir tecnologia, organização e visualização de dados para proporcionar uma experiência de controle financeiro mais simples e acessível.
+
+A proposta é permitir que o usuário consiga visualizar a plataforma e compreender rapidamente quanto possui, quanto recebeu, quanto gastou, onde seu dinheiro foi utilizado e como suas movimentações estão impactando sua situação financeira.
+
+
+DESENVOLVIMENTO
+
+Projeto desenvolvido por João Gabriel com o objetivo de aplicar e aprimorar conhecimentos relacionados à programação e ao desenvolvimento web.
+
+O Cone Finance também representa a aplicação prática de conceitos relacionados ao desenvolvimento front-end, criação de interfaces, organização de dados, experiência do usuário e construção de aplicações web.
+
+
+LICENÇA
+
+Este projeto foi desenvolvido para fins de estudo, prática e portfólio.
+
+Todos os direitos relacionados ao projeto Cone Finance são reservados ao desenvolvedor.
